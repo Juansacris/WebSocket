@@ -1,0 +1,10 @@
+{
+	"dependencies": [
+		"openssl",
+		"boost-asio",
+		{
+			"name": "cpprestsdk",
+			"features": [ "websockets" ]
+		}
+	]
+}

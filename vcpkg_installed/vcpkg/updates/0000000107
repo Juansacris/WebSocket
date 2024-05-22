@@ -1,0 +1,8 @@
+Package: boost-align
+Version: 1.85.0
+Depends: boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-static-assert
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 070e6f09a92f0305ca53881177ebe23b37196d6b5a8eced9e8ee79e8826e5a9f
+Description: Boost align module
+Status: install ok installed

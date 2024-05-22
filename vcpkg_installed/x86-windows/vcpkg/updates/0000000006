@@ -1,0 +1,8 @@
+Package: boost-type-index
+Version: 1.84.0
+Depends: boost-config, boost-container-hash, boost-core, boost-throw-exception, boost-vcpkg-helpers
+Architecture: x86-windows
+Multi-Arch: same
+Abi: dfc2e64727ae8cfc9817d4cb6ef6b84a683f6aee03d5e50351bf0fe888c0d1be
+Description: Boost type_index module
+Status: purge ok half-installed

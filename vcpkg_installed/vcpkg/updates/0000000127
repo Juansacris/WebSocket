@@ -1,0 +1,7 @@
+Package: cpprestsdk
+Feature: brotli
+Depends: brotli
+Architecture: x64-windows
+Multi-Arch: same
+Description: Brotli compression support
+Status: install ok installed

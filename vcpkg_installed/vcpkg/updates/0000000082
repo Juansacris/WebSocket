@@ -1,0 +1,8 @@
+Package: boost-range
+Version: 1.85.0
+Depends: boost-array, boost-assert, boost-cmake, boost-concept-check, boost-config, boost-container-hash, boost-conversion, boost-core, boost-detail, boost-headers, boost-iterator, boost-mpl, boost-optional, boost-preprocessor, boost-regex, boost-static-assert, boost-tuple, boost-type-traits, boost-utility
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a2ce640f34c7ecb7724482777dee108eb4d7d2602506582897e3d79b4e0e79ee
+Description: Boost range module
+Status: install ok half-installed

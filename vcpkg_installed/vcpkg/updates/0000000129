@@ -1,0 +1,7 @@
+Package: cpprestsdk
+Feature: websockets
+Depends: boost-date-time, boost-regex, boost-system, openssl, websocketpp
+Architecture: x64-windows
+Multi-Arch: same
+Description: Websockets support
+Status: install ok installed

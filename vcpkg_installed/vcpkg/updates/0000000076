@@ -1,0 +1,8 @@
+Package: boost-regex
+Version: 1.85.0
+Depends: boost-assert, boost-cmake, boost-concept-check, boost-config, boost-container-hash, boost-core, boost-headers, boost-integer, boost-mpl, boost-predef, boost-smart-ptr, boost-static-assert, boost-throw-exception, boost-type-traits
+Architecture: x64-windows
+Multi-Arch: same
+Abi: d48fd591e58acb223651387f89d4b8f4bce55c44ae7c225fbba8329bd81fb504
+Description: Boost regex module
+Status: install ok half-installed
