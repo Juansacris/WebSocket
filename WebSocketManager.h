@@ -2,27 +2,30 @@
 
 #include <cpprest/ws_client.h>
 #include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 
 using namespace web;
 using namespace web::websockets::client;
 
+
 class WebSocketManager
 {
-public:
-	WebSocketManager( const utility::string_t& serverUri);
-
-	void wsConnect();
-	void wsSend(const json::value & message);
-	json::value wsRecieve();
-	void wsClose();
-	void suscribe();
-	void sendMessage();
-	
 
 private:
 	websocket_client client;
 	utility::string_t serverUri;
+
+public:
+	WebSocketManager( const utility::string_t& serverUri);
+
+	bool wsConnect();
+	bool wsSend(const nlohmann::json& message);
+	nlohmann::json wsRecieve();
+	bool wsClose();
+	bool suscribe();
+	void sendMessage();
+	
 
 };
 

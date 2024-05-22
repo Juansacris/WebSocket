@@ -1,7 +1,9 @@
 // ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <boost/beast/core.hpp>
 #include "WebSocketManager.h"
+#include "Entities/RequestInfo.h"
 #include <iostream>
 #include <string>
 #include <cstddef>
@@ -14,12 +16,11 @@ int main()
 {
     WebSocketManager webSocketManager(U("wss://wa-manuel-avs.azurewebsites.net/chat/chatHub"));
 
-    json::value handshake;
+    nlohmann::json  handshake;
+    RequestInfo                 requestInfo;
 
-    handshake[U("protocol")] = json::value::string(L"json");
-    handshake[U("version")] = json::value::number(1);
-
-    //std::cout << utility::conversions::to_utf8string(handshake.serialize()).append("") << std::endl;
+    handshake["protocol"] = "json";
+    handshake["version"] = 1;
 
     webSocketManager.wsConnect();
     webSocketManager.wsSend(handshake);
@@ -28,20 +29,21 @@ int main()
 
     while (true)
     {
-        json::value response = webSocketManager.wsRecieve();
-        if (response.has_field(U("type")) && response.at(U("type")) == 1)
+        nlohmann::json  response = webSocketManager.wsRecieve();
+        if (response.contains("type") && response["type"] == 1)
         {
-            if (response.has_field(U("target")) && response[U("target")].as_string() == L"OnMessage")
+            if (response.contains("target")
+                && response.value("target", "")
+                == "OnMessage")
             {
-                if (response.has_field(U("arguments")))
+                if (response.contains("arguments"))
                 {
-                    json::value jsonArray = response[U("arguments")];                   
-                    json::value arguments = jsonArray[0];
-                    //std::wcout << arguments.serialize() << std::endl;
-                    utility::string_t ss = arguments[U("message")].as_string();
-                    std::string message = utility::conversions::to_utf8string(ss);
-                    std::cout << "El contenido del mensaje es: " << message << std::endl;
-                    if (message == "Close")
+                    nlohmann::json  jsonArray = response["arguments"];
+                    nlohmann::json  arguments = jsonArray[0];                   
+                    requestInfo = RequestInfo::Deserialize(jsonArray[0]);
+                    
+                    std::cout << "El contenido del mensaje es: " << requestInfo.Data << std::endl;
+                    if (requestInfo.Data == "Close")
                     {
                         webSocketManager.wsClose();
                         break;
@@ -51,35 +53,13 @@ int main()
                 continue;
             }
 
-        }
-        else if (response.has_field(U("type")) && response.at(U("type")) == 3)
-        {
-            if (response.has_field(U("result")))
-            {
-                json::value result = response[U("result")];
-
-                if (result[U("success")].as_bool() == true)
-                {
-                    std::cout << "La accion se completo correctamente" << std::endl;
-                    continue;
-                }
-            }
-        }
-        else if (response.has_field(U("type")) && response.at(U("type")) == 6)
-        {
-            if (count == 1)
-            {
-                webSocketManager.suscribe();
-                count++;
-            }
-            std::cout << "Leyendo.." << std::endl;
-            count++;
-            continue;
-        }
+        } 
         count++;
     }
 
-    webSocketManager.wsClose();    
+    webSocketManager.wsClose();   
+
+    return 0;
 
 }
 

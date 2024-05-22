@@ -131,6 +131,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
+    <ClCompile Include="Entities\ChunckInfo.cpp" />
+    <ClCompile Include="Entities\ConnectionInfo.cpp" />
+    <ClCompile Include="Entities\RequestInfo.cpp" />
     <ClCompile Include="WebSocketManager.cpp" />
     <ClCompile Include="WebSocketManager.h" />
   </ItemGroup>
@@ -139,6 +142,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\Desktop\JSON_PROCESOS.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Entities\ChunckInfo.h" />
+    <ClInclude Include="Entities\ConnectionInfo.h" />
+    <ClInclude Include="Entities\RequestInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
