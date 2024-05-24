@@ -1,23 +1,25 @@
 #pragma once
-
-#include <cpprest/ws_client.h>
-#include <cpprest/json.h>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/ssl/ssl_stream.hpp>
+#include <iostream>
 #include <nlohmann/json.hpp>
-
-
-using namespace web;
-using namespace web::websockets::client;
 
 
 class WebSocketManager
 {
 
 private:
-	websocket_client client;
-	utility::string_t serverUri;
+	boost::asio::io_context io_context;
+	boost::asio::ssl::context sslContext;
+	boost::asio::ip::tcp::resolver resolver;
+	boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>> ws;
+	std::string serverUri;	
 
 public:
-	WebSocketManager( const utility::string_t& serverUri);
+	WebSocketManager( const std::string& serverUri);
 
 	bool wsConnect();
 	bool wsSend(const nlohmann::json& message);

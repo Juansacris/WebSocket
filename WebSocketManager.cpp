@@ -1,16 +1,32 @@
 #include "WebSocketManager.h"
 #include "Entities/ConnectionInfo.h"
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+
+#include <boost/asio.hpp>
 
 
 
-WebSocketManager::WebSocketManager(const utility::string_t& serverUri) :client(), serverUri(serverUri) {}
+WebSocketManager::WebSocketManager(const std::string& serverUri) :
+	sslContext{boost::asio::ssl::context::tlsv13_client},
+	resolver{ io_context },
+	ws{ io_context, sslContext },
+	serverUri{ serverUri }
+{
+	
+
+}
 
 bool WebSocketManager::wsConnect()
 {
 	try
 	{
-		client.connect(serverUri).wait();
-
+		auto const results = resolver.resolve(serverUri, "443");
+		
+		boost::asio::connect(ws.next_layer().next_layer(), results);
+		ws.next_layer().handshake(boost::asio::ssl::stream_base::client);
+		ws.handshake(serverUri, "/repserver/notification/AgentHub");
+		
 		nlohmann::json handshake;
 		handshake["protocol"] = "json";
 		handshake["version"] = 1;
@@ -25,7 +41,7 @@ bool WebSocketManager::wsConnect()
 			}
 		}
 	}
-	catch (const std::exception& exc)
+	catch (const boost::system::system_error& exc)		
 	{
 		std::cout << exc.what() << std::endl;
 		return false;
@@ -37,14 +53,14 @@ bool WebSocketManager::wsSend(const nlohmann::json& message)
 {
 	try
 	{
-		web::websockets::client::websocket_outgoing_message msg;
+		std::cout << "Enviando mensaje " << std::endl;
 		std::string                                         mensage = message.dump() += "";
-		msg.set_utf8_message(mensage);
-		client.send(msg).wait();
+		std::cout << mensage << std::endl;
+		ws.write(boost::asio::buffer(mensage));		
 
 		return true;
 	}
-	catch (const std::exception& exc)
+	catch (const boost::system::system_error& exc)
 	{
 		std::cout << exc.what() << std::endl;
 		return false;
@@ -53,11 +69,13 @@ bool WebSocketManager::wsSend(const nlohmann::json& message)
 
 nlohmann::json WebSocketManager::wsRecieve()
 {
-	auto receiveTask = client.receive();
-	receiveTask.wait();
-	auto        message = receiveTask.get();
-	std::string msgResponse = message.extract_string().get();
+	boost::beast::flat_buffer buffer;
+	ws.read(buffer);
+
+	std::string msgResponse = boost::beast::buffers_to_string(buffer.data());
 	msgResponse.pop_back();
+
+	std::cout << msgResponse << std::endl;
 
 	return nlohmann::json::parse(msgResponse);
 
@@ -67,10 +85,10 @@ bool WebSocketManager::wsClose()
 {
 	try
 	{
-		client.close().wait();
+		ws.close(boost::beast::websocket::close_code::normal);
 		return true;
 	}
-	catch (const std::exception& exc)
+	catch (const boost::system::system_error& exc)
 	{
 		std::cout << exc.what() << std::endl;
 		return false;
@@ -81,8 +99,8 @@ bool WebSocketManager::suscribe()
 {
 	nlohmann::json suscribeReq;
 	ConnectionInfo connectionInfo;
-	connectionInfo.Id = "guid";
-	connectionInfo.Name = "name";
+	connectionInfo.Id = "123456789";
+	connectionInfo.Name = "cpp_boost";
 	connectionInfo.Tenant = "0";
 
 	suscribeReq["arguments"] = nlohmann::json::array({ connectionInfo.ConvertToJson() });
